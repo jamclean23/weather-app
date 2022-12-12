@@ -42,8 +42,7 @@ button {
     padding: .2rem;
 }
 
-#result,
-#forecast {
+#result {
     font-size: 2rem;
     font-weight: bolder;
     -webkit-text-stroke: 1px rgba(0, 0, 0, .4);
