@@ -41,7 +41,6 @@ function getWeather () {
     dataToBeDisplayed.currentDate = new Date();
     
     //Get city info
-    console.log('updated');
     fetch('https://api.openweathermap.org/geo/1.0/direct?q=' + city.value + ',' + state.value +',&limit=&appid=2c01d27f6e4ccace82f774629e85f711&', { mode: 'cors' })
     .then(function(cityData) {
         return cityData.json();
@@ -53,7 +52,6 @@ function getWeather () {
         cityLon = cityData[0].lon;
         return fetch('https://api.openweathermap.org/data/2.5/weather?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial', { mode: 'cors' })
         .then(function(weather) {
-            console.log(weather);
             return weather.json();
         })
     })
@@ -173,6 +171,5 @@ function displayLoading() {
     const result = document.querySelector('#result');
     result.innerHtml = '';
     result.innerText = 'Loading Results';
-    console.log('loading');
 }
 
