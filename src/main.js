@@ -52,9 +52,10 @@ function getWeather () {
         cityLat = cityData[0].lat;
         cityLon = cityData[0].lon;
         return fetch('https://api.openweathermap.org/data/2.5/weather?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial', { mode: 'cors' })
-    })
-    .then(function(weather) {
-        return weather.json();
+        .then(function(weather) {
+            console.log(weather);
+            return weather.json();
+        })
     })
     .then(function(weather) {
         dataToBeDisplayed.feels_like = weather.main.feels_like;
@@ -62,17 +63,17 @@ function getWeather () {
         dataToBeDisplayed.currentConditions = weather.weather[0].description;
 
         //submit a new request for an hourly weather forecast
-        return fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial&cnt=8', { mode: 'cors' });
-    })
-    .then(function(weather) {
-        return weather.json();
+        return fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial&cnt=8', { mode: 'cors' })
+        .then(function(weather) {
+            return weather.json();
+        })
     })
     .then(function(weather) {
         dataToBeDisplayed.low = calculateNightLowTemp(weather);
-        return fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial&cnt=40'), { mode: 'cors' };
-    })
-    .then(function(weather) {
-        return weather.json();
+        return fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial&cnt=40', { mode: 'cors' })
+        .then(function(weather) {
+            return weather.json();
+        })
     })
     .then(function(weather) {
         dataToBeDisplayed.days = calculateDailyForecast(weather);
