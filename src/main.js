@@ -41,6 +41,7 @@ function getWeather () {
     dataToBeDisplayed.currentDate = new Date();
     
     //Get city info
+    console.log('updated');
     fetch('https://api.openweathermap.org/geo/1.0/direct?q=' + city.value + ',' + state.value +',&limit=&appid=2c01d27f6e4ccace82f774629e85f711&', { mode: 'cors' })
     .then(function(cityData) {
         return cityData.json();
