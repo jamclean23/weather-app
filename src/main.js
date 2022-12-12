@@ -1,5 +1,11 @@
 //Javascript
 
+//Initialize
+
+displayBackground();
+getWeather();
+
+
 
 //Event Listeners
 
@@ -9,14 +15,28 @@ submitButton.addEventListener('click', getWeather)
 
 //Functions
 
+function displayBackground () {
+
+    //Determine if it's day or night
+    const body = document.querySelector('body');
+    const date = new Date();
+
+    if (date.getHours() <= 6 || date.getHours() >= 19) {
+        body.style.cssText = "background-image: url('./images/night.jpg');";
+    } else {
+        body.style.cssText = "background-image: url('./images/day.jpg');";
+    }
+    
+}
+
 function getWeather () {
 
     const city = document.querySelector('#city');
     const state = document.querySelector('#state');
     let cityLat;
     let cityLon;
-    let forecastData = {};
     let dataToBeDisplayed = {};
+    dataToBeDisplayed.currentDate = new Date();
 
     //Get city info
     fetch('http://api.openweathermap.org/geo/1.0/direct?q=' + city.value + ',' + state.value +',&limit=&appid=2c01d27f6e4ccace82f774629e85f711&')
@@ -25,6 +45,7 @@ function getWeather () {
     })
     //submit a new request with lat and lon for current conditions
     .then(function(cityData) {
+        dataToBeDisplayed.cityData = cityData;
         cityLat = cityData[0].lat;
         cityLon = cityData[0].lon;
         return fetch('https://api.openweathermap.org/data/2.5/weather?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial')
@@ -33,24 +54,19 @@ function getWeather () {
         return weather.json();
     })
     .then(function(weather) {
-        console.log('Current Conditions:');
         console.log(weather);
         dataToBeDisplayed.feels_like = weather.main.feels_like;
         dataToBeDisplayed.currentTemp = weather.main.temp;
-    })
-    //submit a new request for an hourly weather forecast
-    .then(function() {
+        dataToBeDisplayed.currentConditions = weather.weather[0].description;
+
+        //submit a new request for an hourly weather forecast
         return fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial&cnt=8');
     })
     .then(function(weather) {
         return weather.json();
     })
     .then(function(weather) {
-        console.log('Forecast:');
-        console.log(weather);
         dataToBeDisplayed.low = calculateNightLowTemp(weather);
-    })
-    .then(function() {
         return fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial&cnt=40');
     })
     .then(function(weather) {
@@ -58,8 +74,7 @@ function getWeather () {
     })
     .then(function(weather) {
         dataToBeDisplayed.days = calculateDailyForecast(weather);
-    })
-    .then(function() {
+        console.log(weather);
         console.log(dataToBeDisplayed);
         displayData(dataToBeDisplayed);
     })
@@ -81,13 +96,11 @@ function getWeather () {
                 return currentValue;
             }
         });
-        console.log('Night-time Low:');
-        console.log(lowestTemp);
         return lowestTemp;
     }
 
     function calculateDailyForecast (weather) {
-        console.log(weather);
+
         let forecast = [];
 
         weather.list.forEach((item, index) => {
@@ -100,14 +113,12 @@ function getWeather () {
                 day.description = item.weather[0].description;
                 day.temp = item.main.temp;
                 forecast.push(day);
-                console.log(day);
             }
             if (date.getHours() <= 4 && date.getHours() >= 2) {
                 day.date = months[date.getMonth()] + ' ' + date.getDate() + ' night:';
                 day.description = item.weather[0].description;
                 day.temp = item.main.temp;
                 forecast.push(day);
-                console.log(day);
             }
         });
         return forecast;
@@ -116,19 +127,45 @@ function getWeather () {
     //Display the weather data in a field
     function displayData (data) {
 
-        let forecast = "";
-        data.days.forEach((item, index) => {
-            console.log(item);
-            forecast += '\n \n' + item.date + '\n' + item.description + "\nTemp: " + item.temp;
-        });
+        //Make a string with day of the week
+        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const today = weekdays[data.currentDate.getDay()];
 
+        //Make a string with the name of the month
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const thisMonth = months[data.currentDate.getMonth()];
+
+        //Format current conditions
+        data.currentConditions = data.currentConditions.split(" ");
+        data.currentConditions = data.currentConditions.map((word) => {
+            const capital = word.substr(0,1).toUpperCase();
+            let restOfWord = word.substr(1);
+            return capital + restOfWord;
+        });
+        data.currentConditions = data.currentConditions.join(" ");
+        console.log(data.currentConditions);
+
+        //Fill current conditions div
         const result = document.querySelector('#result');
-        result.innerText = "";
-        result.innerText = 
-        "Feels Like: " + data.feels_like + '\u00B0' +
+        result.innerHTML = "";
+        const h2 = document.createElement('h2');
+        h2.innerText = data.cityData[0].name;
+        result.appendChild(h2);
+        const resultText = document.createElement('p');
+        resultText.innerText =
+        //date 
+        today + "\n" +
+        thisMonth + " " +
+        data.currentDate.getDate() +
+        //conditions
+        '\n\n' + data.currentConditions +
+        "\nFeels Like: " + data.feels_like + '\u00B0' +
         "\nTemp: " + data.currentTemp + '\u00B0' + 
-        "\nNight-time Low: " + data.low + '\u00B0' +
-        forecast;
+        "\nNight-time Low: " + data.low + '\u00B0';
+        result.appendChild(resultText);
+
+
     }
 
 }
+

@@ -37,7 +37,11 @@ module.exports = {
                 {
                     context: 'src/',
                     from: 'css/*',
-                }
+                },
+                {
+                    context: 'src/',
+                    from: 'images/*',
+                },
             ],
         }),
     ],
