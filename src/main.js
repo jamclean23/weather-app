@@ -31,13 +31,15 @@ function displayBackground () {
 
 function getWeather () {
 
+    displayLoading();
+
     const city = document.querySelector('#city');
     const state = document.querySelector('#state');
     let cityLat;
     let cityLon;
     let dataToBeDisplayed = {};
     dataToBeDisplayed.currentDate = new Date();
-
+    
     //Get city info
     fetch('http://api.openweathermap.org/geo/1.0/direct?q=' + city.value + ',' + state.value +',&limit=&appid=2c01d27f6e4ccace82f774629e85f711&')
     .then(function(cityData) {
@@ -54,7 +56,6 @@ function getWeather () {
         return weather.json();
     })
     .then(function(weather) {
-        console.log(weather);
         dataToBeDisplayed.feels_like = weather.main.feels_like;
         dataToBeDisplayed.currentTemp = weather.main.temp;
         dataToBeDisplayed.currentConditions = weather.weather[0].description;
@@ -74,8 +75,6 @@ function getWeather () {
     })
     .then(function(weather) {
         dataToBeDisplayed.days = calculateDailyForecast(weather);
-        console.log(weather);
-        console.log(dataToBeDisplayed);
         displayData(dataToBeDisplayed);
     })
 
@@ -143,7 +142,6 @@ function getWeather () {
             return capital + restOfWord;
         });
         data.currentConditions = data.currentConditions.join(" ");
-        console.log(data.currentConditions);
 
         //Fill current conditions div
         const result = document.querySelector('#result');
@@ -167,5 +165,12 @@ function getWeather () {
 
     }
 
+}
+
+function displayLoading() {
+    const result = document.querySelector('#result');
+    result.innerHtml = '';
+    result.innerText = 'Loading Results';
+    console.log('loading');
 }
 
