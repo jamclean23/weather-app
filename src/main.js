@@ -41,7 +41,7 @@ function getWeather () {
     dataToBeDisplayed.currentDate = new Date();
     
     //Get city info
-    fetch('http://api.openweathermap.org/geo/1.0/direct?q=' + city.value + ',' + state.value +',&limit=&appid=2c01d27f6e4ccace82f774629e85f711&')
+    fetch('http://api.openweathermap.org/geo/1.0/direct?q=' + city.value + ',' + state.value +',&limit=&appid=2c01d27f6e4ccace82f774629e85f711&', { mode: 'cors' })
     .then(function(cityData) {
         return cityData.json();
     })
@@ -50,7 +50,7 @@ function getWeather () {
         dataToBeDisplayed.cityData = cityData;
         cityLat = cityData[0].lat;
         cityLon = cityData[0].lon;
-        return fetch('https://api.openweathermap.org/data/2.5/weather?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial')
+        return fetch('https://api.openweathermap.org/data/2.5/weather?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial', { mode: 'cors' })
     })
     .then(function(weather) {
         return weather.json();
@@ -61,14 +61,14 @@ function getWeather () {
         dataToBeDisplayed.currentConditions = weather.weather[0].description;
 
         //submit a new request for an hourly weather forecast
-        return fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial&cnt=8');
+        return fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial&cnt=8', { mode: 'cors' });
     })
     .then(function(weather) {
         return weather.json();
     })
     .then(function(weather) {
         dataToBeDisplayed.low = calculateNightLowTemp(weather);
-        return fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial&cnt=40');
+        return fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + cityLat + '&lon=' + cityLon + '&appid=2c01d27f6e4ccace82f774629e85f711&units=imperial&cnt=40'), { mode: 'cors' };
     })
     .then(function(weather) {
         return weather.json();
